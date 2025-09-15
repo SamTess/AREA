@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "login": "Connexion",
+    "todos": "Tâches",
+    "api": "API Inspector"
+  },
+  "login": {
+    "title": "Bienvenue",
+    "subtitle": "Connectez-vous à votre compte",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "loading": "Connexion en cours...",
+    "error": "Erreur de connexion"
+  },
+  "todos": {
+    "title": "Mes Tâches",
+    "add": "Ajouter une tâche",
+    "placeholder": "Nouvelle tâche...",
+    "loading": "Chargement...",
+    "empty": "Aucune tâche pour le moment",
+    "error": "Erreur lors du chargement"
+  },
+  "api": {
+    "title": "Inspecteur API",
+    "method": "Méthode",
+    "url": "URL",
+    "body": "Corps de la requête",
+    "send": "Envoyer",
+    "response": "Réponse"
+  }
+}
