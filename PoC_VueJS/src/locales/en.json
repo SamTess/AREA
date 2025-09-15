@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "login": "Login",
+    "todos": "Todos",
+    "api": "API Inspector"
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign In",
+    "loading": "Signing in...",
+    "error": "Login failed"
+  },
+  "todos": {
+    "title": "My Todos",
+    "add": "Add Todo",
+    "placeholder": "New todo...",
+    "loading": "Loading...",
+    "empty": "No todos yet",
+    "error": "Error loading todos"
+  },
+  "api": {
+    "title": "API Inspector",
+    "method": "Method",
+    "url": "URL",
+    "body": "Request Body",
+    "send": "Send",
+    "response": "Response"
+  }
+}
