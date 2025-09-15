@@ -15,9 +15,12 @@ public class Todo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String title;
 
     @Column(nullable = true)
     private Boolean completed;
+
+    @Column(name = "todo_order")
+    private Integer order;
 }

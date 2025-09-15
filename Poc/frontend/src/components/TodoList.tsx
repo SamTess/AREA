@@ -6,13 +6,41 @@ type Props = {
   todos: Todo[];
   onToggle: (id: string, completed: boolean) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onReorder: (ids: string[]) => void;
 };
 
-export default function TodoList({ todos, onToggle, onDelete }: Props) {
+export default function TodoList({ todos, onToggle, onDelete, onReorder }: Props) {
+  const [draggedIdx, setDraggedIdx] = React.useState<number | null>(null);
+
+  function handleDragStart(idx: number) {
+    setDraggedIdx(idx);
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLLIElement>, idx: number) {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === idx) return;
+  }
+
+  function handleDrop(idx: number) {
+    if (draggedIdx === null || draggedIdx === idx) return;
+    const newTodos = [...todos];
+    const [removed] = newTodos.splice(draggedIdx, 1);
+    newTodos.splice(idx, 0, removed);
+    onReorder(newTodos.map((t) => t.id));
+    setDraggedIdx(null);
+  }
+
   return (
     <ul className="w-full max-w-xl divide-y">
-      {todos.map((t) => (
-        <li key={t.id} className="flex items-center justify-between py-2">
+      {todos.map((t, idx) => (
+        <li
+          key={t.id}
+          className="flex items-center justify-between py-2 cursor-move"
+          draggable
+          onDragStart={() => handleDragStart(idx)}
+          onDragOver={(e) => handleDragOver(e, idx)}
+          onDrop={() => handleDrop(idx)}
+        >
           <label className="flex items-center gap-3">
             <input
               type="checkbox"

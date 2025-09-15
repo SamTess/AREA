@@ -73,6 +73,23 @@ export default function Home() {
     }
   }
 
+  async function reorderTodos(ids: string[]) {
+    setTodos((prev) => {
+      const idToTodo = Object.fromEntries(prev.map((t) => [t.id, t]));
+      return ids.map((id) => idToTodo[id]).filter(Boolean);
+    });
+    try {
+      await fetch(`${API}/todos/order`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ids),
+      });
+    } catch (e) {
+      console.error(e);
+      fetchTodos();
+    }
+  }
+
   return (
     <div className="min-h-screen p-8 flex items-start justify-center">
       <div className="w-full max-w-2xl">
@@ -82,7 +99,7 @@ export default function Home() {
           {loading ? (
             <div>Loading…</div>
           ) : (
-            <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
+            <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} onReorder={reorderTodos} />
           )}
         </div>
       </div>
