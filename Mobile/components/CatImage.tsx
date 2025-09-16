@@ -12,6 +12,7 @@ export default function CatImage({ mimeTypes = 'jpg,png', size = 'med', breedIds
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
+  const [imgSize, setImgSize] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -21,6 +22,7 @@ export default function CatImage({ mimeTypes = 'jpg,png', size = 'med', breedIds
         const img = await fetchRandomCatImage({ mime_types: mimeTypes, size, breed_ids: breedIds });
         if (!mounted) return;
         setUrl(img?.url || null);
+        if (img?.width && img?.height) setImgSize({ width: img.width, height: img.height });
         setError(null);
       } catch (e: any) {
         setError(e?.message || 'Failed to load cat');
@@ -37,9 +39,17 @@ export default function CatImage({ mimeTypes = 'jpg,png', size = 'med', breedIds
   if (error) return <Text style={styles.error}>CatAPI: {error}</Text>;
   if (!url) return <Text style={styles.error}>No image found</Text>;
 
+  const aspectRatio = imgSize && imgSize.width > 0 && imgSize.height > 0
+    ? imgSize.width / imgSize.height
+    : 1;
+
   return (
     <View style={styles.wrapper}>
-      <Image source={{ uri: url }} style={styles.image} resizeMode="cover" />
+      <Image
+        source={{ uri: url }}
+        style={[styles.image, { aspectRatio }]}
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -48,5 +58,5 @@ const styles = StyleSheet.create({
   loader: { marginTop: 16 },
   error: { color: 'crimson', marginTop: 8 },
   wrapper: { width: '100%', alignItems: 'center', marginTop: 16 },
-  image: { width: '100%', height: 200, borderRadius: 8 },
+  image: { width: '100%', borderRadius: 8 },
 });
