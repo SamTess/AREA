@@ -1,0 +1,134 @@
+<style>
+  .to-do-list {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+  }
+  
+  /* make the page-level sidenav container fill the viewport so sidenav isn't clipped */
+  .page-sidenav-container {
+    height: 100vh; /* full viewport height */
+  }
+
+  .to-do-sidenav {
+    width: 420px; /* wider sidenav width */
+    padding: 24px; /* more internal space */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* gap between fields */
+  }
+
+  /* wrapper to center the table block within the content area */
+  .to-do-table-wrapper {
+    display: flex;
+    justify-content: center; /* center horizontally */
+  }
+
+  /* container around table to allow paginator to align bottom-left relative to the centered table */
+  .centered-block {
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .paginator-row {
+    display: flex;
+    justify-content: flex-end;
+    padding-left: 8px;
+  }
+
+  /* constrain the centered table to the same max width as the page */
+  .center-table {
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .sidenav-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+</style>
+
+<mat-sidenav-container class="page-sidenav-container">
+  <mat-sidenav #sidenav [mode]="sidenavMode" position="start" class="to-do-sidenav" [ngStyle]="{ 'width': sidenavWidth, 'background': sidenavBg }">
+    <h2>Create new task</h2>
+    <mat-form-field appearance="fill" style="width: 100%;">
+      <mat-label>Task title</mat-label>
+      <input matInput [(ngModel)]="newTitle" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="width: 100%;">
+      <mat-label>Due date</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="newDueDate" />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <div class="sidenav-actions">
+      <button mat-button (click)="cancelSidenav()">Cancel</button>
+      <button mat-flat-button color="primary" (click)="saveFromSidenav()">Save</button>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="to-do-list">
+      <div class="header">
+        <h1>To-Do List</h1>
+        <button mat-flat-button color="primary" (click)="openCreateSidenav()">Create New Task</button>
+      </div>
+
+      <div class="to-do-table-wrapper">
+        <div class="centered-block">
+          <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 center-table">
+
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef> Title </th>
+            <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+          </ng-container>
+
+          <!-- Date Column -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef> Due Date </th>
+            <td mat-cell *matCellDef="let element"> {{element.date ? (element.date | date:'shortDate') : '-' }} </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let element; let i = index">
+              <button mat-button color="warn" (click)="markAsDone(i)"> Done </button>
+              <button mat-button color="warn" (click)="removeTask(i)">Remove</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <div class="paginator-row">
+            <mat-paginator [length]="dataSource.data.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25]"  showFirstLastButtons aria-label="Select page"></mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
