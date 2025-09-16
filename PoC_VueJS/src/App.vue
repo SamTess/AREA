@@ -9,18 +9,25 @@ function doLogout() { auth.logout(); location.href = '/login' }
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-900">
     <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200/50 shadow-sm">
-      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="w-full px-4 py-4 flex items-center justify-between gap-4 flex-wrap">
         <div class="flex items-center gap-6">
           <div class="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             PoC Vue
           </div>
-          <nav class="flex items-center gap-1">
+          <nav class="flex items-center gap-1 flex-wrap">
             <router-link 
               class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-100 hover:text-blue-600 active:scale-95" 
               to="/todos"
               active-class="bg-blue-100 text-blue-700"
             >
               📝 Todos
+            </router-link>
+            <router-link 
+              class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-100 hover:text-blue-600 active:scale-95" 
+              to="/todos-local"
+              active-class="bg-blue-100 text-blue-700"
+            >
+              🗒️ Local Todos
             </router-link>
             <router-link 
               class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-gray-100 hover:text-blue-600 active:scale-95" 
@@ -49,7 +56,7 @@ function doLogout() { auth.logout(); location.href = '/login' }
         </div>
       </div>
     </header>
-    <main class="max-w-6xl mx-auto px-4 py-8">
+  <main class="w-full px-4 py-8">
       <router-view />
     </main>
   </div>

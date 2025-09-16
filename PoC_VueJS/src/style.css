@@ -28,8 +28,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -39,30 +37,13 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  @apply rounded-lg border border-transparent py-2 px-4 text-base font-medium;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+/* Retiré le style global des boutons pour éviter un fond noir inattendu. */
 
 .card {
   padding: 2em;
 }
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+
 
 @media (prefers-color-scheme: light) {
   :root {

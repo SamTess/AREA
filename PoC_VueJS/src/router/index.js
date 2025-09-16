@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 const Login = () => import('@/views/LoginView.vue')
 const Todos = () => import('@/views/TodosView.vue')
 const ApiInspector = () => import('@/views/ApiInspectorView.vue')
+const TodosLocal = () => import('@/views/TodosLocalView.vue')
 
 const router = createRouter({
   history: createWebHistory(),
@@ -11,6 +12,7 @@ const router = createRouter({
     { path: '/', redirect: '/todos' },
     { path: '/login', name: 'login', component: Login, meta: { public: true } },
     { path: '/todos', name: 'todos', component: Todos, meta: { public: true } },
+  { path: '/todos-local', name: 'todos-local', component: TodosLocal, meta: { public: true } },
     { path: '/api', name: 'api', component: ApiInspector, meta: { public: true } },
     { path: '/:pathMatch(.*)*', redirect: '/todos' },
   ],
