@@ -11,7 +11,7 @@ export default function useAuth() {
   const fetchMe = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await get<User | null>(`/users/me`);
+      const res = await get<User | null>(`/auth/me`);
       setUser(res);
       return res;
     } catch (e) {
