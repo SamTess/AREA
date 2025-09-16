@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/users")
@@ -26,4 +28,31 @@ public class UserController {
         UserDto created = userService.create(dto);
         return ResponseEntity.created(URI.create("/api/users/" + created.getId())).body(created);
     }
+
+    @GetMapping("/me") // TODO: replace with real auth
+    public ResponseEntity<UserDto> me(HttpServletRequest request) {
+        final String ANSI_BLUE = "\u001B[34m";
+        final String ANSI_GREEN = "\u001B[32m";
+        final String ANSI_RESET = "\u001B[0m";
+
+        System.out.println(ANSI_BLUE + "Provided cookies (Cookie header): " + ANSI_GREEN + request.getHeader("Cookie") + ANSI_RESET);
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null && cookies.length > 0) {
+            System.out.println(ANSI_BLUE + "Provided cookies (parsed):" + ANSI_RESET);
+            for (Cookie c : cookies) {
+                System.out.println(ANSI_GREEN + " - " + c.getName() + "=" + c.getValue() + ANSI_RESET);
+            }
+        } else {
+            System.out.println(ANSI_GREEN + "No cookies sent with request." + ANSI_RESET);
+        }
+
+        UserDto dummyUser = UserDto.builder()
+                .id(1L)
+                .username("dummyuser")
+                .email("test@test.com")
+                .build();
+        return ResponseEntity.ok(dummyUser);
+    }
 }
+

@@ -2,6 +2,7 @@ package com.area.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "todos")
@@ -23,4 +24,22 @@ public class Todo {
 
     @Column(name = "todo_order")
     private Integer order;
+
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name = "due_date")
+    private OffsetDateTime dueDate;
+
+    @Column(name = "tags")
+    private String tags; // comma-separated tags for simplicity
+
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private OffsetDateTime deletedAt;
 }

@@ -27,41 +27,32 @@ public class TodoController {
         return ResponseEntity.created(URI.create("/api/todos/" + created.getId())).body(created);
     }
 
-    // PATCH /api/todos/order
+    @GetMapping("/{id}")
+    public ResponseEntity<TodoDto> get(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(todoService.get(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<TodoDto> patch(@PathVariable("id") Long id, @Validated @RequestBody TodoDto dto) {
+        TodoDto patched = todoService.patch(id, dto);
+        return ResponseEntity.ok(patched);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        todoService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/order")
     public ResponseEntity<Void> reorder(@RequestBody List<Long> ids) {
         todoService.reorder(ids);
         return ResponseEntity.ok().build();
     }
 
-    // POST /api/todos/clear-completed
     @PostMapping("/clear-completed")
     public ResponseEntity<Void> clearCompleted() {
         todoService.clearCompleted();
-        return ResponseEntity.noContent().build();
-    }
-}
-
-@RestController
-@RequestMapping("/api/todos/{id}")
-@RequiredArgsConstructor
-class TodoItemController {
-    private final TodoService todoService;
-
-    @GetMapping
-    public ResponseEntity<TodoDto> get(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(todoService.get(id));
-    }
-
-    @PatchMapping
-    public ResponseEntity<TodoDto> patch(@PathVariable("id") Long id, @Validated @RequestBody TodoDto dto) {
-        TodoDto patched = todoService.patch(id, dto);
-        return ResponseEntity.ok(patched);
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        todoService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

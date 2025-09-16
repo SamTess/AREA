@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Todo from "@/types/Todo";
+import { Todo } from "@/types";
 
 type Props = {
   todos: Todo[];
@@ -52,7 +52,7 @@ export default function TodoList({ todos, onToggle, onDelete, onReorder }: Props
             </span>
           </label>
           <button
-            className="text-sm text-red-600"
+            className="text-sm text-red-600  hover:text-red-700"
             onClick={() => onDelete(t.id)}
           >
             Delete

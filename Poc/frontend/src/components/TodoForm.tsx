@@ -32,7 +32,7 @@ export default function TodoForm({ onCreate }: Props) {
       />
       <button
         type="submit"
-        className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-60"
+        className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-60"
         disabled={loading}
       >
         Add

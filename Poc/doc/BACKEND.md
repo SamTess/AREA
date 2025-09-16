@@ -2,7 +2,7 @@ Backend Spring Boot project (AREA) - skeleton
 
 Includes:
 - Java 21
-- Spring Boot (web, security, oauth2 client, data-jpa, redis, actuator, validation)
+- Spring Boot (web, security, data-jpa, redis, actuator, validation)
 - PostgreSQL + Flyway
 - Dockerfile and docker-compose.yml
 

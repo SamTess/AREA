@@ -13,4 +13,9 @@ public class TodoDto {
     private Long id;
     private String title;
     private Boolean completed;
+    private Long userId;
+    private String dueDate;
+    private String tags;
+    private String createdAt;
+    private String updatedAt;
 }

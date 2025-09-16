@@ -1,14 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Todo } from "@/types";
 import TodoForm from "@/components/TodoForm";
 import TodoList from "@/components/TodoList";
-import Todo from "@/types/Todo";
+import useAuth from "@/hooks/useAuth";
+import useApi from "@/hooks/useApi";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "";
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { get, post, patch, del } = useApi();
+  const { user, loading: authLoading } = useAuth();
+  const [ todos, setTodos ] = useState<Todo[]>([]);
+  const [ loading, setLoading ] = useState(false);
 
   useEffect(() => {
     fetchTodos();
@@ -17,10 +20,8 @@ export default function Home() {
   async function fetchTodos() {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/todos`);
-      if (!res.ok) throw new Error("Failed to load todos");
-      const data = await res.json();
-      setTodos(data);
+      const todos = await get<Todo[]>(`/todos`);
+      setTodos(todos);
     } catch (e) {
       console.error(e);
     } finally {
@@ -29,18 +30,12 @@ export default function Home() {
   }
 
   async function createTodo(title: string) {
-    // optimistic id
     const tempId = "t-" + Date.now();
     const optimistic: Todo = { id: tempId, title, completed: false };
     setTodos((s) => [optimistic, ...s]);
     try {
-      const res = await fetch(`${API}/todos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title }),
-      });
-      if (!res.ok) throw new Error("create failed");
-      const saved = await res.json();
+      const res = await post<Todo, { title: string }>(`/todos`, { title });
+      const saved = { ...res };
       setTodos((s) => s.map((t) => (t.id === tempId ? saved : t)));
     } catch (e) {
       console.error(e);
@@ -51,11 +46,7 @@ export default function Home() {
   async function toggleTodo(id: string, completed: boolean) {
     setTodos((s) => s.map((t) => (t.id === id ? { ...t, completed } : t)));
     try {
-      await fetch(`${API}/todos/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed }),
-      });
+      await patch<Todo, { completed: boolean }>(`/todos/${id}`, { completed });
     } catch (e) {
       console.error(e);
       fetchTodos();
@@ -66,7 +57,7 @@ export default function Home() {
     const previous = todos;
     setTodos((s) => s.filter((t) => t.id !== id));
     try {
-      await fetch(`${API}/todos/${id}`, { method: "DELETE" });
+      await del<null>(`/todos/${id}`);
     } catch (e) {
       console.error(e);
       setTodos(previous);
@@ -79,11 +70,7 @@ export default function Home() {
       return ids.map((id) => idToTodo[id]).filter(Boolean);
     });
     try {
-      await fetch(`${API}/todos/order`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(ids),
-      });
+      await patch<null, string[]>(`/todos/order`, ids);
     } catch (e) {
       console.error(e);
       fetchTodos();
@@ -93,7 +80,20 @@ export default function Home() {
   return (
     <div className="min-h-screen p-8 flex items-start justify-center">
       <div className="w-full max-w-2xl">
-        <h1 className="text-2xl font-bold mb-4">Todos</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">Todos</h1>
+          <div className="text-sm text-gray-600">
+            {authLoading ? (
+              <span>Checking auth…</span>
+            ) : user ? (
+              <span>
+                Signed in as <strong>{user.username}</strong> with email <strong>{user.email}</strong>
+              </span>
+            ) : (
+              <span>Not signed in</span>
+            )}
+          </div>
+        </div>
         <TodoForm onCreate={createTodo} />
         <div className="mt-4">
           {loading ? (
