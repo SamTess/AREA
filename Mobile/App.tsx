@@ -5,6 +5,7 @@ import TodoInput from "./components/TodoInput";
 import TodoList from "./components/TodoList";
 import { appStyles as styles } from "./styles/appStyles";
 import HttpCat from "./components/HttpCat";
+import CatImage from "./components/CatImage";
 
 export default function App() {
   const { value, setValue, toDoList, error, handleSubmit, removeItem, toggleComplete, showError } = useTodos();
@@ -34,6 +35,7 @@ export default function App() {
         <Text style={styles.subtitle}>Your Tasks :</Text>
         <TodoList items={toDoList} onToggle={toggleComplete} onRemove={removeItem} />
         <HttpCat status={toDoList.length === 0 ? 404 : 200} />
+        <CatImage />
       </ScrollView>
     </KeyboardAvoidingView>
   );

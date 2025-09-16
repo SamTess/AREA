@@ -34,6 +34,7 @@ Mobile/
   App.tsx                # Root screen (uses ScrollView + KeyboardAvoidingView)
   index.ts               # Expo entry (registers App)
   components/
+    CatImage.tsx        # Fetches a random cat image from TheCatAPI
     HttpCat.tsx          # Displays https://http.cat/[status_code]
     TodoInput.tsx        # Input + add button + error message
     TodoItem.tsx         # Single todo row
@@ -53,6 +54,31 @@ Mobile/
 - React Native version: see `package.json`.
 - Remote image rendering via `Image` with `uri`.
 - Scroll behavior: `ScrollView` with `contentContainerStyle` and `KeyboardAvoidingView` for better keyboard UX.
+
+### TheCatAPI (API Key)
+The app includes a helper and component to display a random cat image from TheCatAPI.
+
+1) Set your API key (public Expo env var):
+```bash
+export EXPO_PUBLIC_CAT_API_KEY=your_thecatapi_key
+```
+
+2) Use the component (already rendered in `App.tsx`):
+```tsx
+import CatImage from './components/CatImage';
+<CatImage mimeTypes="jpg,png" size="med" />
+```
+
+3) Or call the service directly:
+```ts
+import { fetchRandomCatImage } from './services/catapi';
+const img = await fetchRandomCatImage({ mime_types: 'jpg,png', size: 'med' });
+console.log(img.url);
+```
+
+Notes:
+- TheCatAPI expects the API key in header `x-api-key`.
+- If no key is set, requests may be rate-limited or fail.
 
 ## Patterns
 - Keep UI dumb (components) and move logic into hooks.
