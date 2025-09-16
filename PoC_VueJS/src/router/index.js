@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 const Login = () => import('@/views/LoginView.vue')
 const Todos = () => import('@/views/TodosView.vue')
 const ApiInspector = () => import('@/views/ApiInspectorView.vue')
+const TodosLocal = () => import('@/views/TodosLocalView.vue')
 
 const router = createRouter({
   history: createWebHistory(),
