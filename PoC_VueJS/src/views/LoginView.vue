@@ -26,8 +26,8 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="flex items-center justify-center min-h-[60vh]">
-    <div class="w-full max-w-md">
+  <div class="min-h-[60vh] w-full px-4">
+    <div class="w-full">
       <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-8 relative overflow-hidden">
         <!-- Decorative gradient -->
         <div class="absolute inset-0 bg-gradient-to-br from-blue-400/10 via-purple-400/10 to-pink-400/10 pointer-events-none" aria-hidden="true"></div>
@@ -40,7 +40,7 @@ async function onSubmit() {
             <p class="text-gray-600 mt-2">Sign in to your account</p>
           </div>
 
-          <form @submit.prevent="onSubmit" class="space-y-6" role="form" aria-label="Login form">
+          <form @submit.prevent="onSubmit" class="space-y-6 max-w-xl" role="form" aria-label="Login form">
             <div class="space-y-4">
               <div class="group">
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
@@ -74,7 +74,7 @@ async function onSubmit() {
               :disabled="loading" 
               type="submit" 
               :aria-label="loading ? 'Signing in...' : 'Sign in to your account'"
-              class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98] shadow-lg hover:shadow-xl"
+              class="w-full sm:w-auto py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98] shadow-lg hover:shadow-xl"
             >
               <span v-if="loading" class="inline-flex items-center">
                 <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -96,11 +96,11 @@ async function onSubmit() {
             </p>
           </div>
 
-          <div class="mt-6 text-center">
+          <div class="mt-6">
             <p class="text-xs text-gray-500 mb-3">
               API expects POST /auth/login → { accessToken, refreshToken }
             </p>
-            <nav class="flex items-center justify-center gap-4 text-sm" aria-label="Quick navigation">
+            <nav class="flex items-center gap-4 text-sm flex-wrap" aria-label="Quick navigation">
               <router-link 
                 class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-2 py-1" 
                 to="/api"
