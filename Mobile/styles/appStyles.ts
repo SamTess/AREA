@@ -2,6 +2,10 @@ import { StyleSheet } from 'react-native';
 import { colors, spacing, typography } from './theme';
 
 export const appStyles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   container: {
     padding: spacing.lg + spacing.md, // 24 + 16 = 40 ~ previous 35
     alignItems: 'center',
