@@ -1,0 +1,67 @@
+<div class="create-profile-container">
+	<mat-card class="create-profile-card">
+		<mat-card-title>Create Profile</mat-card-title>
+
+			<mat-card-content>
+				<mat-card class="auth-card" style="background: #fff7f9; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+					<div style="display: flex; flex-direction: column; gap: 16px; padding: 16px;">
+						<button mat-stroked-button color="primary" style="justify-content: flex-start; text-align: left;">
+							<img src="https://cdn.iconscout.com/icon/free/png-512/free-google-icon-svg-download-png-189824.png?f=webp&w=256" alt="Google" style="height:24px; width:24px; margin-right:12px; vertical-align:middle;">
+							Log in with Google
+						</button>
+						<button mat-stroked-button color="primary" style="justify-content: flex-start; text-align: left;">
+							<img src="https://cdn.iconscout.com/icon/free/png-512/free-github-logo-icon-svg-download-png-2496133.png?f=webp&w=256" alt="GitHub" style="height:24px; width:24px; margin-right:12px; vertical-align:middle;">
+							Log in with GitHub
+						</button>
+						<button mat-stroked-button color="primary" style="justify-content: flex-start; text-align: left;">
+							<img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Office 365" style="height:24px; width:24px; margin-right:12px; vertical-align:middle;">
+							Log in with Office 365
+						</button>
+					</div>
+				</mat-card>
+			</mat-card-content>
+
+
+
+
+		<mat-card-content>
+			<mat-stepper orientation="vertical" #stepper>
+				<mat-step [stepControl]="firstFormGroup">
+					<form [formGroup]="firstFormGroup">
+						<ng-template matStepLabel>Fill out your name</ng-template>
+						<mat-form-field>
+							<mat-label>Name</mat-label>
+							<input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+						</mat-form-field>
+						<div>
+							<button mat-button matStepperNext>Next</button>
+						</div>
+					</form>
+				</mat-step>
+
+				<mat-step [stepControl]="secondFormGroup">
+					<form [formGroup]="secondFormGroup">
+						<ng-template matStepLabel>Fill out your address</ng-template>
+						<mat-form-field>
+							<mat-label>Address</mat-label>
+							<input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY" required>
+						</mat-form-field>
+						<div>
+							<button mat-button matStepperPrevious>Back</button>
+							<button mat-button matStepperNext>Next</button>
+						</div>
+					</form>
+				</mat-step>
+
+				<mat-step>
+					<ng-template matStepLabel>Done</ng-template>
+					<p>You are now done.</p>
+					<div>
+						<button mat-button matStepperPrevious>Cancel</button>
+						<button mat-button (click)="goToHome()">Create</button>
+					</div>
+				</mat-step>
+			</mat-stepper>
+		</mat-card-content>
+	</mat-card>
+</div>

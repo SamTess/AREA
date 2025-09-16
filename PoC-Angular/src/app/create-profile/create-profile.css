@@ -1,0 +1,30 @@
+.create-profile-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 80vh;
+	padding: 16px;
+}
+
+.create-profile-card {
+	width: 100%;
+	max-width: 640px;
+	padding: 16px;
+}
+
+mat-form-field {
+	display: block;
+	width: 100%;
+}
+
+#toggle-linear {
+	margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+	.create-profile-card {
+		margin: 0 8px;
+		padding: 12px;
+	}
+}
+
