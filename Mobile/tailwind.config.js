@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     './App.{js,jsx,ts,tsx}',
     './index.{js,jsx,ts,tsx}',
@@ -11,7 +12,20 @@ module.exports = {
   ],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: 'purple',
+        danger: 'crimson',
+        text: '#222',
+        muted: '#777',
+        background: '#ffffffff',
+        error: 'red',
+        // dark variants
+        'background-dark': '#1d1f21',
+        'text-dark': '#f5f5f5',
+        'muted-dark': '#999999',
+      },
+    },
   },
   plugins: [],
 };

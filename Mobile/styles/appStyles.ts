@@ -7,7 +7,7 @@ export const appStyles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   container: {
-    padding: spacing.lg + spacing.md, // 24 + 16 = 40 ~ previous 35
+    padding: spacing.lg + spacing.md,
     alignItems: 'center',
     backgroundColor: colors.background,
   },
@@ -20,7 +20,7 @@ export const appStyles = StyleSheet.create({
   },
   subtitle: {
     fontSize: typography.subtitle,
-    marginBottom: spacing.md + spacing.sm, // 24 ~ previous 20
+    marginBottom: spacing.md + spacing.sm,
     color: colors.primary,
   },
   addButton: {

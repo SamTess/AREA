@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
-import { colors, spacing } from '../styles/theme';
+import { View, TextInput, Button, Text } from 'react-native';
+import { useThemeScheme } from '../context/ThemeContext';
+// NativeWind migration: using tailwind classes
 
 type Props = {
   value: string;
@@ -10,39 +11,22 @@ type Props = {
 };
 
 export function TodoInput({ value, onChangeText, onSubmit, showError }: Props) {
+  const { scheme } = useThemeScheme();
+  const isDark = scheme === 'dark';
   return (
     <>
-      <View style={styles.inputWrapper}>
+      <View className="w-full mb-6 flex-row justify-between">
         <TextInput
           placeholder="Enter your todo task..."
-          value={value}
-          onChangeText={onChangeText}
-          style={styles.inputBox}
+            value={value}
+            onChangeText={onChangeText}
+            className={`w-52 border-2 border-primary rounded-lg pl-2 ${isDark ? 'text-text-dark bg-background-dark' : 'text-text bg-white'}`}
         />
         <Button title="Add Task" onPress={onSubmit} />
       </View>
-      {showError ? <Text style={styles.error}>Error: Input field is empty...</Text> : null}
+      {showError ? <Text className={` ${isDark ? 'text-danger' : 'text-error'}`}>Error: Input field is empty...</Text> : null}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  inputWrapper: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-  },
-  inputBox: {
-    width: 200,
-    borderColor: colors.primary,
-    borderRadius: 8,
-    borderWidth: 2,
-    paddingLeft: spacing.sm,
-  },
-  error: {
-    color: colors.error,
-  },
-});
 
 export default TodoInput;

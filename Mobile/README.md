@@ -43,17 +43,37 @@ Mobile/
     useTodos.ts          # Todo business logic/state
   interfaces/
     IToDo.interface.ts   # Types
+  context/
+    ThemeContext.tsx     # Light/Dark scheme provider
   styles/
-    appStyles.ts         # Screen-level styles
-    theme.ts             # Colors, spacing, typography
+    theme.ts             # Colors, spacing, typography (legacy constants)
   assets/                # Icons, images
 ```
 
 ## Tech Notes
+- Styling now uses **NativeWind** (Tailwind for React Native). See `tailwind.config.js`.
+- Dark mode supported via `darkMode: 'class'` and a custom `ThemeProvider`.
 - TypeScript module resolution uses `"bundler"` to support Expo + `customConditions` from `expo/tsconfig.base`.
-- React Native version: see `package.json`.
 - Remote image rendering via `Image` with `uri`.
 - Scroll behavior: `ScrollView` with `contentContainerStyle` and `KeyboardAvoidingView` for better keyboard UX.
+
+### NativeWind Usage
+Utility classes are applied via the `className` prop. We use conditional concatenation (JS) instead of `dark:` variants inside components for clarity:
+```tsx
+const isDark = scheme === 'dark';
+<View className={`flex-1 ${isDark ? 'bg-background-dark' : 'bg-background'} px-6`}>
+  <Text className={isDark ? 'text-text-dark font-bold text-2xl' : 'text-text font-bold text-2xl'}>Hello</Text>
+</View>
+```
+
+Tailwind config defines color tokens: `background`, `text`, `muted`, plus dark counterparts `background-dark`, `text-dark`, `muted-dark`.
+
+### Dark Mode Toggle
+`ThemeToggle` flips the internal `scheme` in `ThemeProvider`. Components read `scheme` and choose classes accordingly (no reliance on adding a global `.dark` class). This avoids edge cases with nested scroll views.
+
+To switch to variant syntax later, reintroduce `dark:` classes and put `className={isDark ? 'dark flex-1' : 'flex-1'}` at the app root.
+
+If you prefer system-only behavior, remove the toggle and listen to `Appearance.addChangeListener` to update `scheme`.
 
 ### TheCatAPI (API Key)
 The app includes a helper and component to display a random cat image from TheCatAPI.
@@ -82,7 +102,8 @@ Notes:
 
 ## Patterns
 - Keep UI dumb (components) and move logic into hooks.
-- Reuse styles via `theme.ts` and `appStyles.ts`.
+- Prefer Tailwind utility classes; `theme.ts` remains for potential JS-calculated spacing.
+- Avoid reintroducing StyleSheet unless performance-critical edge cases arise.
 
 ## Troubleshooting
 - Android SDK: ensure `adb` is in `PATH`.

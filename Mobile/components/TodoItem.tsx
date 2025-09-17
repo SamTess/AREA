@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { colors, spacing } from '../styles/theme';
+import { View, Text, Button } from 'react-native';
 import { IToDo } from '../interfaces/IToDo.interface';
+import { useThemeScheme } from '../context/ThemeContext';
 
 type Props = {
   item: IToDo;
@@ -11,9 +11,11 @@ type Props = {
 };
 
 export function TodoItem({ item, index, onToggle, onRemove }: Props) {
+  const { scheme } = useThemeScheme();
+  const isDark = scheme === 'dark';
   return (
-    <View style={styles.listItem}>
-      <Text style={[styles.task, { textDecorationLine: item.completed ? 'line-through' : 'none' }]}>
+    <View className="w-full mb-3 flex-row items-center justify-between">
+      <Text className={`w-52 ${item.completed ? (isDark ? 'line-through text-muted-dark' : 'line-through text-muted') : isDark ? 'text-text-dark' : 'text-text'}`}>
         {item.text}
       </Text>
       <Button title={item.completed ? 'Completed' : 'Complete'} onPress={() => onToggle(index)} />
@@ -21,18 +23,5 @@ export function TodoItem({ item, index, onToggle, onRemove }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: spacing.sm + spacing.xs,
-  },
-  task: {
-    width: 200,
-  },
-});
 
 export default TodoItem;

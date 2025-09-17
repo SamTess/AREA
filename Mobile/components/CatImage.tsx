@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Image, ActivityIndicator, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Image, ActivityIndicator, Text, Pressable } from 'react-native';
 import { fetchRandomCatImage } from '../services/catapi';
 
 type Props = {
@@ -38,30 +38,23 @@ export default function CatImage({ mimeTypes = 'jpg,png', size = 'med', breedIds
     };
   }, [load]);
 
-  if (loading) return <ActivityIndicator style={styles.loader} />;
-  if (error) return <Text style={styles.error}>CatAPI: {error}</Text>;
-  if (!url) return <Text style={styles.error}>No image found</Text>;
+  if (loading) return <ActivityIndicator className="mt-4" />;
+  if (error) return <Text className="text-danger mt-2">CatAPI: {error}</Text>;
+  if (!url) return <Text className="text-danger mt-2">No image found</Text>;
 
   const aspectRatio = imgSize && imgSize.width > 0 && imgSize.height > 0
     ? imgSize.width / imgSize.height
     : 1;
 
   return (
-    <Pressable onPress={load} disabled={loading} style={styles.wrapper} accessibilityRole="imagebutton" accessibilityLabel="Refresh cat image">
+    <Pressable onPress={load} disabled={loading} className="w-full items-center mt-4" accessibilityRole="imagebutton" accessibilityLabel="Refresh cat image">
       <Image
         source={{ uri: url }}
-        style={[styles.image, { aspectRatio, opacity: loading ? 0.7 : 1 }]}
+        style={{ aspectRatio, opacity: loading ? 0.7 : 1 }}
+        className="w-full rounded-lg"
         resizeMode="contain"
       />
-      {loading ? <ActivityIndicator style={styles.overlayLoader} /> : null}
+      {loading ? <ActivityIndicator className="absolute" /> : null}
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  loader: { marginTop: 16 },
-  error: { color: 'crimson', marginTop: 8 },
-  wrapper: { width: '100%', alignItems: 'center', marginTop: 16 },
-  image: { width: '100%', borderRadius: 8 },
-  overlayLoader: { position: 'absolute' },
-});
