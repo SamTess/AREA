@@ -8,20 +8,22 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.area.backend.security.JwtAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         return http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests( auth -> {
-                auth.requestMatchers("/**").permitAll();
-                // auth.requestMatchers("/api/users/**", "/about.json").permitAll();
-                // auth.anyRequest().authenticated();
+                auth.requestMatchers("/api/users/**", "/api/auth/**").permitAll();
+                auth.anyRequest().authenticated();
             })
             .build();
     }

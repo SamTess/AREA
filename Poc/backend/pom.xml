@@ -95,6 +95,25 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- JJWT for JWT handling -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -117,8 +136,11 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>9.22.3</version>
                 <configuration>
+                    <!-- TODO : .env -->
                     <url>jdbc:postgresql://localhost:5433/area</url>
+                    <!-- TODO : .env -->
                     <user>postgres</user>
+                    <!-- TODO : .env -->
                     <password>postgres</password>
                     <baselineOnMigrate>true</baselineOnMigrate>
                     <cleanDisabled>false</cleanDisabled>
