@@ -88,6 +88,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Dotenv support -->
+        <dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>spring-dotenv</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -136,12 +143,9 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>9.22.3</version>
                 <configuration>
-                    <!-- TODO : .env -->
-                    <url>jdbc:postgresql://localhost:5433/area</url>
-                    <!-- TODO : .env -->
-                    <user>postgres</user>
-                    <!-- TODO : .env -->
-                    <password>postgres</password>
+                    <url>${env.DB_URL}</url>
+                    <user>${env.DB_USER}</user>
+                    <password>${env.DB_PASS}</password>
                     <baselineOnMigrate>true</baselineOnMigrate>
                     <cleanDisabled>false</cleanDisabled>
                 </configuration>

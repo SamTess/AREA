@@ -15,19 +15,33 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
+    private final String githubClientId;
+    private final String githubClientSecret;
     private final UserRepository userRepository;
     private final OAuthAccountService oauthAccountService;
     private final JwtService jwtService;
+
+    public AuthController(
+            @Value("${spring.security.oauth2.client.registration.github.client-id}") String githubClientId,
+            @Value("${spring.security.oauth2.client.registration.github.client-secret}") String githubClientSecret,
+            UserRepository userRepository,
+            OAuthAccountService oauthAccountService,
+            JwtService jwtService) {
+        this.githubClientId = githubClientId;
+        this.githubClientSecret = githubClientSecret;
+        this.userRepository = userRepository;
+        this.oauthAccountService = oauthAccountService;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping("/{provider}/exchange")
     public ResponseEntity<String> exchangeToken(@PathVariable("provider") String provider,
@@ -40,36 +54,33 @@ public class AuthController {
         }
 
         if ("github".equalsIgnoreCase(provider)) {
-            String clientId = "Ov23liCJZiEo1fBCXY0G"; // TODO : .env
-            String clientSecret = "9f05a130186a0feb4b2a597b01feca4d93b51150"; // TODO : .env
-
-            System.out.println("Client ID: " + clientId);
-            if (clientId == null || clientSecret == null) {
+            System.out.println("Client ID: " + githubClientId);
+            if (githubClientId == null || githubClientId.isEmpty() || githubClientSecret == null || githubClientSecret.isEmpty()) {
                 return ResponseEntity.status(500).body("GitHub client credentials not configured");
             }
 
-        ObjectMapper mapper = new ObjectMapper();
-        RestTemplate rest = new RestTemplate();
+            ObjectMapper mapper = new ObjectMapper();
+            RestTemplate rest = new RestTemplate();
 
-        // Exchange code for access token
-        JsonNode tokenReq = mapper.createObjectNode()
-            .put("client_id", clientId)
-            .put("client_secret", clientSecret)
-            .put("code", code);
+            // Exchange code for access token
+            JsonNode tokenReq = mapper.createObjectNode()
+                .put("client_id", githubClientId)
+                .put("client_secret", githubClientSecret)
+                .put("code", code);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(java.util.Collections.singletonList(MediaType.APPLICATION_JSON));
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(java.util.Collections.singletonList(MediaType.APPLICATION_JSON));
 
-        HttpEntity<String> tokenEntity = new HttpEntity<>(mapper.writeValueAsString(tokenReq), headers);
-        String tokenRespBody;
-        try {
-            tokenRespBody = rest.postForObject("https://github.com/login/oauth/access_token", tokenEntity, String.class);
-        } catch (Exception e) {
-            return ResponseEntity.status(502).body("Failed to exchange code with provider");
-        }
+            HttpEntity<String> tokenEntity = new HttpEntity<>(mapper.writeValueAsString(tokenReq), headers);
+            String tokenRespBody;
+            try {
+                tokenRespBody = rest.postForObject("https://github.com/login/oauth/access_token", tokenEntity, String.class);
+            } catch (Exception e) {
+                return ResponseEntity.status(502).body("Failed to exchange code with provider");
+            }
 
-        JsonNode tokenJson = mapper.readTree(tokenRespBody);
+            JsonNode tokenJson = mapper.readTree(tokenRespBody);
             String accessToken = tokenJson.has("access_token") ? tokenJson.get("access_token").asText(null) : null;
             if (accessToken == null) {
                 return ResponseEntity.status(502).body("No access token returned by provider");
