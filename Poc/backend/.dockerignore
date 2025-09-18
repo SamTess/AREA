@@ -1,0 +1,22 @@
+# Exclude unnecessary files from Docker build context
+target/
+*.log
+*.tmp
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+.git/
+.gitignore
+README.md
+*.md
+backend.zip
+
+# Keep these files
+!.env
+!src/
+!pom.xml
+!.mvn/
