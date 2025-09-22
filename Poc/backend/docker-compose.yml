@@ -1,34 +1,46 @@
 services:
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+  backend:
+    build: .
     ports:
-      - "5433:5432"
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-development-key-change-in-production
+      - DB_NAME=area_db
+      - DB_USER=postgres
+      - DB_PASS=password
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - GITHUB_APP_CLIENT_ID=${GITHUB_APP_CLIENT_ID}
+      - GITHUB_APP_CLIENT_SECRET=${GITHUB_APP_CLIENT_SECRET}
+      - JWT_SECRET_KEY=your-jwt-secret-key
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+    depends_on:
+      - postgres
+      - redis
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - .:/app
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=area_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
-
-  app:
-    build: .
-    depends_on:
-      - db
-      - redis
-    environment:
-      SPRING_REDIS_HOST: redis
-      DB_URL: 'jdbc:postgresql://db:5432/${DB_NAME}'
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      GITHUB_APP_CLIENT_ID: ${GITHUB_APP_CLIENT_ID}
-      GITHUB_APP_CLIENT_SECRET: ${GITHUB_APP_CLIENT_SECRET}
-    ports:
-      - "8080:8080"
+    volumes:
+      - redis_data:/data
 
 volumes:
-  db-data:
+  postgres_data:
+  redis_data:

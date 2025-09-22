@@ -1,30 +1,21 @@
-# Build stage
-FROM maven:3.9.5-eclipse-temurin-21 AS build
-
-# Set working directory
-WORKDIR /app
-
-# Copy all project files
-COPY pom.xml ./
-COPY src ./src
-COPY .env ./
-
-# Build the application (skip tests for faster build)
-RUN mvn clean package -DskipTests
-
-# Runtime stage
-FROM eclipse-temurin:21-jre-jammy
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy the JAR from build stage
-COPY --from=build /app/target/*.jar app.jar
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy .env file for runtime configuration
-COPY --from=build /app/.env ./
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
 
 # Expose port
-EXPOSE 8080
+EXPOSE 8000
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Run migrations and start server
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
