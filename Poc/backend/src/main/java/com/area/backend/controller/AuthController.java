@@ -176,17 +176,14 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/me") // TODO: replace with real session getter
+    @GetMapping("/me")
     public ResponseEntity<UserDto> me(HttpServletRequest request) {
         final String ANSI_BLUE = "\u001B[34m";
         final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_RESET = "\u001B[0m";
 
-        System.out.println(ANSI_BLUE + "Provided cookies (Cookie header): " + ANSI_GREEN + request.getHeader("Cookie") + ANSI_RESET);
-
         jakarta.servlet.http.Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
-            System.out.println(ANSI_BLUE + "Provided cookies (parsed):" + ANSI_RESET);
             for (jakarta.servlet.http.Cookie c : cookies) {
                 System.out.println(ANSI_GREEN + " - " + c.getName() + "=" + c.getValue() + ANSI_RESET);
             }
