@@ -20,5 +20,6 @@ from api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path('api/todos', views.TodoListCreateView.as_view(), name='todo_list_create_redirect'),
     path('about.json', views.about, name='about'),
 ]

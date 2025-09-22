@@ -212,10 +212,16 @@ class TodoDetailView(generics.RetrieveUpdateDestroyAPIView):
 def todo_reorder(request):
     """Reorder todos, equivalent to Spring's TodoController.reorder"""
     try:
-        ids = request.data  # Expecting a list of IDs
+        ids = request.data  # Expecting a list of IDs (strings from frontend)
 
         for index, todo_id in enumerate(ids):
-            Todo.objects.filter(id=todo_id).update(order=index)
+            # Convert string ID to integer for database query
+            try:
+                todo_id_int = int(todo_id)
+                Todo.objects.filter(id=todo_id_int).update(order=index)
+            except (ValueError, TypeError):
+                # Skip invalid IDs
+                continue
 
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
