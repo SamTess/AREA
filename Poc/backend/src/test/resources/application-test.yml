@@ -3,28 +3,27 @@ spring:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
-    password:
-
+    password: 
+  
   jpa:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: false
-
+  
   flyway:
     enabled: false
-
+  
   data:
     redis:
-      host: localhost
-      port: 6379
-      timeout: 2000ms
-      jedis:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
-
+      repositories:
+        enabled: false
+  
+  autoconfigure:
+    exclude: 
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  
   security:
     oauth2:
       client:
@@ -32,12 +31,23 @@ spring:
           github:
             client-id: test-client-id
             client-secret: test-client-secret
-
+            redirect-uri: "http://localhost:8080/oauth2/callback/{registrationId}"
+            scope: user:email
+  
 logging:
   level:
-    com.area.backend: DEBUG
-    org.springframework.security: DEBUG
+    com.area.backend: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate: WARN
 
-jwt:
-  secret: test-secret-key-that-is-long-enough-for-testing-purposes-only
-  expiration: 86400000
+# Environment variables for testing
+JWT_SECRET: test-secret-key-that-is-long-enough-for-testing-purposes-only
+DB_URL: jdbc:h2:mem:testdb
+DB_USER: sa
+DB_PASS: ""
+REDIS_HOST: localhost
+REDIS_PORT: 6379
+GITHUB_APP_CLIENT_ID: test-client-id
+GITHUB_APP_CLIENT_SECRET: test-client-secret
+SERVER_PORT: 8080
