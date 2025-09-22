@@ -1,0 +1,21 @@
+<Page navigatingTo="onNavigatingTo" class="page" xmlns="http://schemas.nativescript.org/tns.xsd">
+  <ActionBar title="Todos" class="action-bar">
+    <ActionItem text="Home" ios.position="left" tap="onGoHome" />
+  </ActionBar>
+  <GridLayout rows="auto, *, auto" class="p-4" rowSpacing="12">
+    <StackLayout row="0" orientation="horizontal" class="space-x-3 items-center">
+      <TextField text="{{ newTitle }}" hint="Nouvelle tâche" returnKeyType="done" returnPress="onAdd" class="flex-1 px-3 py-2 border rounded-md" />
+      <Button text="Ajouter" tap="onAdd" class="btn btn-primary px-4 py-2" />
+    </StackLayout>
+    <ListView row="1" items="{{ todos }}" class="list-group">
+      <ListView.itemTemplate>
+        <GridLayout columns="auto, * , auto" class="list-group-item px-3 py-2" verticalAlignment="center">
+          <Label col="0" text="{{ done ? '✅' : '⭕' }}" tap="onToggle" class="mr-2" />
+          <Label col="1" text="{{ title }}" textWrap="true" class="todo-title {{ done ? 'completed text-gray-500' : '' }}" />
+          <Label col="2" text="🗑" tap="onDelete" class="ml-2" />
+        </GridLayout>
+      </ListView.itemTemplate>
+    </ListView>
+    <Button row="2" text="Supprimer terminées" tap="onClearCompleted" class="mt-2" />
+  </GridLayout>
+</Page>

@@ -1,0 +1,11 @@
+<Page navigatingTo="onNavigatingTo" xmlns="http://schemas.nativescript.org/tns.xsd">
+    <ActionBar>
+        <Label text="Home" />
+        <ActionItem text="Todos" ios.position="right" tap="onGoTodos" />
+    </ActionBar>
+        <StackLayout class="p-6 items-center justify-center h-full space-y-6">
+            <Label text="Welcome in todos list" textWrap="true" class="text-2xl font-semibold text-primary-600" />
+            <Image src="{{ httpCatUrl }}" stretch="aspectFit" width="100%" class="rounded-lg border border-gray-300" tap="onRefreshHttpCat" />
+            <Button text="Aller à la liste" tap="onGoTodos" class="btn btn-primary px-6 py-3" />
+        </StackLayout>
+</Page>
