@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "AREA Mobile",
+    "slug": "area-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    
+    "scheme": "area",
+    
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.area.mobile"
+    },
+    "android": {
+      "package": "com.area.mobile"
+    },
+    
+    "plugins": []
+  }
+}

@@ -1,49 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Frontend (Web + Mobile)
 
-## Getting Started
+This repo contains two frontends:
 
-First, run the development server:
+- Web (Next.js) in `Poc/frontend`
+- Mobile (Expo React Native) in `Poc/mobile` — see `MOBILE.md` for details
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Below are the steps to run the Web app; for Mobile, read `MOBILE.md` in the same folder.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Web Frontend (Next.js)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Prerequisites:
 
-## Learn More
+- Backend running and reachable (default `http://localhost:8080`)
+- Node.js + npm
 
-To learn more about Next.js, take a look at the following resources:
+Environment:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-### Notes for the Todo app
-
-- The simple todo UI in `src/app/page.tsx` calls a backend at the same origin under `/todos`.
-- If your backend runs elsewhere, set `NEXT_PUBLIC_API_URL` to its URL (for example, `http://localhost:4000`).
+- Copy the example env and set the variables:
+	```bash
+	cd Poc/frontend
+	cp example.env .env.local
+	# Edit .env.local as needed
+	```
+- Required variables in `.env.local`:
+	- `NEXT_PUBLIC_API_BASE_URL` (ex: `http://localhost:8080/api`)
+	- `NEXT_PUBLIC_GITHUB_CLIENT_ID` (from your GitHub OAuth App)
 
 Run locally:
 
 ```bash
-cd frontend
+cd Poc/frontend
 npm install
 npm run dev
+# open http://localhost:3000
 ```
+
+GitHub OAuth (Web):
+
+- Ensure your GitHub OAuth App has a callback URL like:
+	- `http://localhost:3000/auth/github/callback`
+- The web app will redirect you back to that page then call the backend `/api/auth/github/exchange` which sets the `area_auth` HttpOnly cookie.
+
+Mobile docs: see `Poc/documentation/MOBILE.md`.
