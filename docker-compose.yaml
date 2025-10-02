@@ -1,0 +1,36 @@
+services:
+  postgres:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: postgres
+
+  redis:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: redis
+
+  backend:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: area-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    extends:
+      file: ./App/Web/Docker/docker-compose.prod.yml
+      service: web
+    depends_on:
+      - backend
+
+networks:
+  area-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+
