@@ -1,0 +1,62 @@
+services:
+  postgres:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: postgres
+
+  redis:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: redis
+
+  server:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: area-backend
+    container_name: area-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - area-network
+
+  client_mobile:
+    build:
+      context: ./App/Mobile
+      dockerfile: Dockerfile
+    container_name: area-client-mobile
+    volumes:
+      - apk_volume:/output
+    networks:
+      - area-network
+    command: sh -c "cp android/app/build/outputs/apk/release/app-release.apk /output/client.apk && echo 'APK copied to shared volume'"
+
+  client_web:
+    build:
+      context: ./App/Web
+      dockerfile: Docker/Dockerfile.web
+    container_name: area-client-web
+    ports:
+      - "8081:3000"
+    volumes:
+      - apk_volume:/app/apk:ro
+    depends_on:
+      - client_mobile
+      - server
+    networks:
+      - area-network
+    restart: unless-stopped
+
+networks:
+  area-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  apk_volume:
+
