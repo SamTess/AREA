@@ -24,13 +24,14 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+          node-version: '20'
+          cache: 'yarn'
 
     - name: Build Web
-      run: cd Web && npm ci && npm run build
+      run: cd Web && yarn install --frozen-lockfile && yarn build
 
     - name: Install Mobile dependencies
-      run: cd Mobile && npm ci
+      run: cd Mobile && yarn install --frozen-lockfile
 
     - name: Create README
       run: |
