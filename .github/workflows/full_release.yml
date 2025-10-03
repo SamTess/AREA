@@ -28,10 +28,10 @@ jobs:
           cache: 'yarn'
 
     - name: Build Web
-      run: cd Web && yarn install --frozen-lockfile && yarn build
+      run: cd App/Web && yarn install --frozen-lockfile && yarn build
 
     - name: Install Mobile dependencies
-      run: cd Mobile && yarn install --frozen-lockfile
+      run: cd App/Mobile && yarn install --frozen-lockfile
 
     - name: Create README
       run: |
@@ -99,9 +99,9 @@ jobs:
       run: |
         mkdir release
         cp -r App/Back/build/libs/*.jar release/ 2>/dev/null || true
-        cp -r Web/.next release/web-build 2>/dev/null || cp -r Web/out release/web-build 2>/dev/null || true
-        cp -r Mobile release/
-        cp docker-compose.yaml release/
+        cp -r App/Web/.next release/web-build 2>/dev/null || cp -r Web/out release/web-build 2>/dev/null || true
+        cp -r App/Mobile release/
+        cp docker-compose.yml release/
         cp README.md release/
         cd release && zip -r ../area-release.zip .
 
