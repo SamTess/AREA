@@ -1,0 +1,19 @@
+- name: Deploy Production Environment with HTTPS
+  hosts: area_prod
+  vars_files:
+    - config.yml
+  tags:
+    - deploy
+    - production
+  vars:
+    deploy_env: "production"
+    git_branch: "{{ repository.git_branch_prod }}"
+    compose_file: "{{ docker.prod_compose_file}}"
+    app_port: "443"
+    env_file: "{{ env_files.prod_env_file }}"
+    domain_name: "{{ production.domain }}"
+    email_for_ssl: "{{ production.email }}"
+  tasks:
+    - name: Include HTTPS deployment tasks
+      include_tasks: https-tasks.yml
+

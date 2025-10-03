@@ -1,0 +1,47 @@
+# Sensitive files - DO NOT COMMIT
+ansible/.env.secrets
+ansible/hosts.ini
+ansible/*.retry
+ansible/*.env.*
+ansible/config.yml
+docker/.env
+
+# Terraform state files
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+
+# SSH keys (if accidentally placed here)
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Ansible logs
+ansible/*.log
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Backup files
+*.backup
+*.bak
+
+# Secrets and credentials
+secrets/
+credentials/
+*.secrets
