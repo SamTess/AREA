@@ -1,8 +1,12 @@
 name: Release full application
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
 
 jobs:
   build-and-package:
@@ -59,14 +63,14 @@ jobs:
         3. The backend will start on port 8080 (check application.properties for configuration)
 
         ### Web (Next.js)
-        1. Navigate to Web/
-        2. Run: npm install
-        3. Run: npm run start
+        1. Navigate to App/Web/
+        2. Run: yarn install
+        3. Run: yarn start
         4. Open http://localhost:3000 in your browser
 
         ### Mobile (React Native)
-        1. Navigate to Mobile/
-        2. Run: npm install
+        1. Navigate to App/Mobile/
+        2. Run: yarn install
         3. For Android: npx react-native run-android
         4. For iOS: npx react-native run-ios
         5. Or use Expo: npx expo start
@@ -78,7 +82,7 @@ jobs:
 
         1. Ensure you have the built images or build them:
            - For Back: cd App/Back && docker build -f Docker/Dockerfile -t area-back .
-           - For Web: cd Web && docker build -f Docker/Dockerfile.web -t area-web .
+           - For Web: cd App/Web && docker build -f Docker/Dockerfile.web -t area-web .
            - For DB: cd App/Back/Docker && docker-compose -f docker-compose.db.yaml up -d
 
         2. From the root directory, run: docker-compose up
@@ -99,17 +103,17 @@ jobs:
       run: |
         mkdir release
         cp -r App/Back/build/libs/*.jar release/ 2>/dev/null || true
-        cp -r App/Web/.next release/web-build 2>/dev/null || cp -r Web/out release/web-build 2>/dev/null || true
+        cp -r App/Web/.next release/web-build 2>/dev/null || cp -r App/Web/out release/web-build 2>/dev/null || true
         cp -r App/Mobile release/
         cp docker-compose.yml release/
         cp README.md release/
         cd release && zip -r ../area-release.zip .
 
-    - name: Upload release asset
+    - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         sudo apt-get update
         sudo apt-get install -y gh
         gh auth login --with-token < <(echo "${GITHUB_TOKEN}")
-        gh release upload "${{ github.event.release.tag_name }}" ./area-release.zip --repo "${{ github.repository }}" --clobber
+        gh release create "${{ github.event.inputs.version }}" ./area-release.zip --repo "${{ github.repository }}" --title "Release ${{ github.event.inputs.version }}" --notes "Automated release of AREA application"
