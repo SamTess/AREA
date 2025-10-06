@@ -51,15 +51,24 @@
 - name: Get latest release tag from AREA Mobile repo
   uri:
     url: https://api.github.com/repos/SamTess/AREA_Mobile/releases/latest
+    headers:
+      Authorization: "token {{ github_token }}"
     return_content: yes
+    status_code: [200, 404]
   register: latest_release
   ignore_errors: yes
+
+- name: Display release status
+  debug:
+    msg: "{{ 'No releases found for AREA_Mobile (will skip APK download)' if latest_release.status == 404 else 'Latest release found: ' + latest_release.json.tag_name }}"
+  when: latest_release.status is defined
 
 - name: Checkout latest release tag if available
   command: git checkout {{ latest_release.json.tag_name }}
   args:
     chdir: "{{ repository.app_directory }}/App/Mobile"
-  when: latest_release is succeeded and latest_release.json.tag_name is defined
+  when: latest_release.status == 200 and latest_release.json.tag_name is defined
+  ignore_errors: yes
 
 - name: Create apk directory
   file:
@@ -72,7 +81,10 @@
     url: "{{ (latest_release.json.assets | selectattr('name', 'match', '.*\\.apk$') | first).browser_download_url }}"
     dest: "{{ repository.app_directory }}/deployement/docker/apk/client.apk"
     mode: '0644'
-  when: latest_release is succeeded and latest_release.json.assets | selectattr('name', 'match', '.*\\.apk$') | length > 0
+    headers:
+      Authorization: "token {{ github_token }}"
+  when: latest_release.status == 200 and latest_release.json.assets is defined and (latest_release.json.assets | selectattr('name', 'match', '.*\\.apk$') | list | length > 0)
+  ignore_errors: yes
 
 - name: Copy environment file
   template:

@@ -25,6 +25,7 @@ ssh:
 
 git_repository: "git@github.com:SamTess/AREA.git"
 git_branch: "https-deployement"
+github_token: ""
 
 staging:
   domain: ""
