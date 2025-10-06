@@ -33,13 +33,13 @@ services:
     container_name: area-postgres
     env_file: .env
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_USER: ${DATABASE_USERNAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -66,10 +66,10 @@ services:
   #   container_name: area-backend
   #   env_file: .env
   #   environment:
-  #     DATABASE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
-  #     DATABASE_USERNAME: ${DB_USER}
-  #     DATABASE_PASSWORD: ${DB_PASSWORD}
-  #     DATABASE_NAME: ${DB_NAME}
+  #     DATABASE_URL: jdbc:postgresql://postgres:5432/${DATABASE_NAME}
+  #     DATABASE_USERNAME: ${DATABASE_USERNAME}
+  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  #     DATABASE_NAME: ${DATABASE_NAME}
   #   depends_on:
   #     postgres:
   #       condition: service_healthy
@@ -103,7 +103,7 @@ services:
       - apk_volume:/app/apk:ro
     restart: always
     healthcheck:
-      test: ["CMD", "sh", "-c", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
