@@ -136,6 +136,91 @@ Alternatively, you can manually add the APK to the web container:
 docker cp /path/to/client.apk area-web:/app/public/downloads/client.apk
 ```
 
+  ## 🚀 One-Command Deployment & Destruction
+
+  Ready to launch or tear down your AREA project? Just use the all-in-one script:
+
+  ### `deploy.sh`
+
+  This friendly script lets you choose to **deploy** (provision infrastructure and configure servers) or **destroy** (remove all cloud resources) with a single command!
+
+  #### Usage
+
+  ```zsh
+  cd deployement
+  ./deploy.sh
+  ```
+
+  You'll be prompted:
+
+  - **Deploy**: Runs Terraform to create infrastructure, waits for hosts to be ready, then runs Ansible to configure and deploy your app.
+  - **Destroy**: Runs Terraform destroy to clean up all resources.
+
+  Enjoy colorful status messages and a smooth experience. No more jumping between folders—just answer the prompt and let the script do the rest!
+
+  ---
+
+  ## Deployment Documentation
+
+  This folder contains all resources and scripts required to deploy the AREA project infrastructure. It is organized into several subfolders, each responsible for a different aspect of deployment:
+
+  ### Structure
+
+  - **ansible/**: Contains Ansible playbooks and configuration files for automating server setup and application deployment. Includes environment templates (`.env.production.j2`, `.env.staging.j2`), playbooks for different environments, and Nginx configuration templates.
+  - **docker/**: Holds Docker Compose files and Nginx configuration for local or server-based container orchestration. Use `.env.example` for environment variable setup (do not include secrets in `.env`).
+  - **terraform/**: Infrastructure as Code scripts for provisioning cloud resources (e.g., DigitalOcean). Includes main Terraform configuration, variable definitions, and state files. Use `terraform.example.tfvars` as a template for your own variables.
+  - **docs/**: Documentation related to deployment processes and infrastructure.
+
+  ### How to Use
+
+  #### 1. Ansible
+
+  - Edit `ansible/config.yml` or use `config.example.yml` as a template for your configuration.
+  - Use the provided playbooks (`playbook-production.yml`, `playbook-staging.yml`, `playbook.yml`) to deploy to your target environment.
+  - Environment files are generated from Jinja templates (`.env.production.j2`, `.env.staging.j2`). Fill in your own secrets and sensitive values in your local configuration, never commit them.
+  - Run `ansible/deploy.sh` to execute the deployment.
+
+  #### 2. Docker
+
+  - Copy `docker/.env.example` to `docker/.env` and fill in the required environment variables (do not commit secrets).
+  - Use `docker-compose.yml` to start the services:
+    ```zsh
+    cd docker
+    docker-compose up -d
+    ```
+  - Nginx configuration is provided in `nginx.conf`.
+
+  #### 3. Terraform
+
+  - Copy `terraform/terraform.example.tfvars` to `terraform/terraform.tfvars` and fill in your cloud provider credentials and other required variables (do not commit secrets).
+  - Initialize Terraform:
+    ```zsh
+    cd terraform
+    terraform init
+    ```
+  - Deploy infrastructure:
+    ```zsh
+    terraform apply
+    ```
+  - Destroy infrastructure:
+    ```zsh
+    terraform destroy
+    ```
+
+  ### Security
+
+  - **Never commit secrets or sensitive credentials.** Use example files as templates and keep your real secrets in local, untracked files.
+  - Review `.gitignore` to ensure sensitive files are excluded from version control.
+
+  ### Additional Notes
+
+  - See individual subfolder `README.md` files or documentation in `docs/` for more detailed guides.
+  - For troubleshooting, check logs and refer to the documentation provided in each subfolder.
+
+  ---
+
+  For further help, contact the project maintainers or refer to the main project documentation.
+
 ## 🔄 Updates and Redeployment
 
 To update the application:
