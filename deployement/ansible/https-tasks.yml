@@ -86,6 +86,15 @@
   when: latest_release.status == 200 and latest_release.json.assets is defined and (latest_release.json.assets | selectattr('name', 'match', '.*\\.apk$') | list | length > 0)
   ignore_errors: yes
 
+- name: Check if APK was downloaded successfully on host
+  stat:
+    path: "{{ repository.app_directory }}/deployement/docker/apk/client.apk"
+  register: apk_host_check
+
+- name: Display APK download status
+  debug:
+    msg: "APK downloaded to host: {{ apk_host_check.stat.exists }} (path: {{ repository.app_directory }}/deployement/docker/apk/client.apk)"
+
 - name: Copy environment file
   template:
     src: ".env.{{ deploy_env }}.j2"
@@ -199,6 +208,32 @@
     pull: "always"
     build: "always"
   register: https_start_result
+
+- name: Copy APK directly to apk_volume named volume
+  command: >
+    docker run --rm
+    -v docker_apk_volume:/tmp/apk
+    -v {{ repository.app_directory }}/deployement/docker/apk/client.apk:/host/client.apk:ro
+    busybox sh -c "cp /host/client.apk /tmp/apk/client.apk && chmod 644 /tmp/apk/client.apk"
+  when: apk_host_check.stat.exists | default(false)
+  ignore_errors: yes
+
+- name: Check APK in apk_volume after copy
+  command: >
+    docker run --rm
+    -v docker_apk_volume:/tmp/apk
+    busybox sh -c "ls -la /tmp/apk/client.apk"
+  register: apk_volume_check
+  ignore_errors: yes
+  when: apk_host_check.stat.exists | default(false)
+
+- name: Display APK volume copy status
+  debug:
+    msg: |
+      APK copied to apk_volume: {{ 'Success' if (apk_volume_check.rc is defined and apk_volume_check.rc == 0) else 'Failed' }}
+      Details: {{ apk_volume_check.stdout | default('N/A') }}
+      Error: {{ apk_volume_check.stderr | default('N/A') }}
+  when: apk_volume_check is defined
 
 - name: Check if compose file exists
   stat:

@@ -19,8 +19,7 @@ read choice
 if [[ "$choice" == "2" ]]; then
 	printf "${RED}Destroying AREA infrastructure...${NC}\n"
 	cd terraform
-	terraform init
-	terraform destroy -auto-approve
+	./destroy.sh
 	cd ..
 	printf "${RED}All resources destroyed. Goodbye! 👋${NC}\n"
 	exit 0
@@ -30,8 +29,7 @@ printf "${GREEN}Starting AREA deployment...${NC}\n"
 
 printf "${YELLOW}Step 1: Running Terraform (provision infrastructure)...${NC}\n"
 cd terraform
-terraform init
-terraform apply -auto-approve
+./deploy.sh
 cd ..
 
 printf "${YELLOW}Waiting 5 seconds for hosts.ini to be generated...${NC}\n"
@@ -44,12 +42,14 @@ cd ..
 
 printf "${GREEN}Deployment complete! Your AREA project is live! 🎉${NC}\n"
 
-DOMAIN_URL=$(awk '/production:/ {f=1} f && /domain:/ {print $2; exit}' ansible/config.yml)
-if [ -z "$DOMAIN_URL" ]; then
-	DOMAIN_URL=$(awk '/staging:/ {f=1} f && /domain:/ {print $2; exit}' ansible/config.yml)
+STAGING_DEPLOYED=$(grep -q "\[area_staging\]" ansible/hosts.ini && echo "yes" || echo "no")
+PRODUCTION_DEPLOYED=$(grep -q "\[area_production\]" ansible/hosts.ini && echo "yes" || echo "no")
+
+if [ "$STAGING_DEPLOYED" = "yes" ]; then
+  STAGING_URL=$(awk '/staging:/ {f=1} f && /domain:/ {gsub(/"/, "", $2); print $2; exit}' ansible/config.yml)
+  printf "${YELLOW}Open staging app: ${NC}https://$STAGING_URL\n"
 fi
-if [ -n "$DOMAIN_URL" ]; then
-	printf "${YELLOW}Open your app: ${NC}https://$DOMAIN_URL\n"
-else
-	printf "${YELLOW}Domain not found in ansible/config.yml. Please check your configuration.\n"
+if [ "$PRODUCTION_DEPLOYED" = "yes" ]; then
+  PRODUCTION_URL=$(awk '/production:/ {f=1} f && /domain:/ {gsub(/"/, "", $2); print $2; exit}' ansible/config.yml)
+  printf "${YELLOW}Open production app: ${NC}https://$PRODUCTION_URL\n"
 fi
