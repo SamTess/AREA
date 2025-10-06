@@ -12,8 +12,8 @@ services:
     depends_on:
       web:
         condition: service_healthy
-      # area-backend:
-      #   condition: service_healthy
+      area-backend:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - area-network
@@ -59,31 +59,31 @@ services:
     networks:
       - area-network
 
-  # area-backend:
-  #   build:
-  #     context: ../../App/Back
-  #     dockerfile: Docker/Dockerfile
-  #   container_name: area-backend
-  #   env_file: .env
-  #   environment:
-  #     DATABASE_URL: jdbc:postgresql://postgres:5432/${DATABASE_NAME}
-  #     DATABASE_USERNAME: ${DATABASE_USERNAME}
-  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-  #     DATABASE_NAME: ${DATABASE_NAME}
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 60s
-  #   restart: unless-stopped
-  #   networks:
-  #     - area-network
+  area-backend:
+    build:
+      context: ../../App/Back
+      dockerfile: Docker/Dockerfile
+    container_name: area-backend
+    env_file: .env
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - area-network
 
   web:
     build:
@@ -103,17 +103,13 @@ services:
       - apk_volume:/app/apk:ro
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health || curl -f http://localhost:3000/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     networks:
       - area-network
-
-networks:
-  area-network:
-    driver: bridge
 
 volumes:
   postgres_data:
@@ -122,4 +118,8 @@ volumes:
   certbot-var:
   certbot-web:
   apk_volume:
+
+networks:
+  area-network:
+    driver: bridge
 

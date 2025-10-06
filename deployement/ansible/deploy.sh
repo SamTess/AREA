@@ -57,11 +57,11 @@ check_environments() {
     local staging_available=false
     local prod_available=false
 
-    if grep -q "\[survivor_staging\]" hosts.ini && grep -A1 "\[survivor_staging\]" hosts.ini | grep -q "ansible_user"; then
+    if grep -q "\[area_staging\]" hosts.ini && grep -A1 "\[area_staging\]" hosts.ini | grep -q "ansible_user"; then
         staging_available=true
     fi
 
-    if grep -q "\[survivor_prod\]" hosts.ini && grep -A1 "\[survivor_prod\]" hosts.ini | grep -q "ansible_user"; then
+    if grep -q "\[area_prod\]" hosts.ini && grep -A1 "\[areajk_prod\]" hosts.ini | grep -q "ansible_user"; then
         prod_available=true
     fi
 

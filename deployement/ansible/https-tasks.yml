@@ -109,7 +109,7 @@
     services:
       - postgres
       - redis
-      # - area-backend
+      - area-backend
       - web
     state: present
   register: docker_start_result
@@ -165,8 +165,8 @@
   command: >
     docker run --rm
     -p 80:80
-    -v deployement_docker_certbot-etc:/etc/letsencrypt
-    -v deployement_docker_certbot-var:/var/lib/letsencrypt
+    -v docker_certbot-etc:/etc/letsencrypt
+    -v docker_certbot-var:/var/lib/letsencrypt
     certbot/certbot certonly
     --standalone
     --email {{ email_for_ssl }}
