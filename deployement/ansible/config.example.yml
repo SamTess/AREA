@@ -1,0 +1,41 @@
+---
+repository:
+  git_url: "git@github.com:SamTess/AREA.git"
+  git_branch_staging: "https-deployement"
+  git_branch_prod: "main"
+  app_directory: "/opt/area"
+
+application:
+  app_name: "AREA"
+  node_version: "22"
+
+docker:
+  staging_compose_file: "docker-compose.yml"
+  prod_compose_file: "docker-compose.yml"
+  staging_port: "3000"
+  prod_port: "3000"
+
+env_files:
+  staging_env_file: ".env.staging"
+  prod_env_file: ".env.production"
+
+ssh:
+  local_private_key: ""
+  github_host_key: ""
+
+git_repository: "git@github.com:SamTess/AREA.git"
+git_branch: "https-deployement"
+github_token: ""
+
+staging:
+  domain: ""
+  email: ""
+  ssl_staging: false
+
+production:
+  domain: ""
+  email: ""
+  ssl_staging: false
+
+backup_directory: "/opt/backups/area"
+log_retention_days: 30

@@ -1,0 +1,18 @@
+- name: Deploy Staging Environment with HTTPS
+  hosts: area_staging
+  vars_files:
+    - config.yml
+  tags:
+    - deploy
+    - staging
+  vars:
+    deploy_env: "staging"
+    git_branch: "{{ repository.git_branch_staging }}"
+    compose_file: "{{ docker.staging_compose_file}}"
+    app_port: "443"
+    env_file: "{{ env_files.staging_env_file }}"
+    domain_name: "{{ staging.domain }}"
+    email_for_ssl: "{{ staging.email }}"
+  tasks:
+    - name: Include HTTPS deployment tasks
+      include_tasks: https-tasks.yml

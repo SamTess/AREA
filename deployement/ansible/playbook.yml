@@ -1,0 +1,130 @@
+- name: Install Docker & Setup SSH
+  hosts: all
+  vars_files:
+    - config.yml
+  tags:
+    - install
+    - dependencies
+  tasks:
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+      register: docker_gpg_result
+      retries: 10
+      delay: 5
+      until: docker_gpg_result is succeeded
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        state: present
+      register: docker_repo_result
+      retries: 10
+      delay: 5
+      until: docker_repo_result is succeeded
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      register: apt_update_result
+      retries: 10
+      delay: 5
+      until: apt_update_result is succeeded
+
+    - name: Ensure Docker is installed
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+      register: docker_result
+      retries: 10
+      delay: 5
+      until: docker_result is succeeded
+
+    - name: Install Docker Compose plugin
+      apt:
+        name: docker-compose-plugin
+        state: present
+        update_cache: yes
+      register: docker_compose_result
+      retries: 10
+      delay: 5
+      until: docker_compose_result is succeeded
+
+    - name: Check if Docker service is running
+      systemd:
+        name: docker
+      register: docker_service_status
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+      when: docker_service_status.status.ActiveState != "active"
+
+    - name: Check if user is already in docker group
+      getent:
+        database: group
+        key: docker
+      register: docker_group
+
+    - name: Add current user to docker group (if not root)
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+      when:
+        - ansible_user != "root"
+        - ansible_user not in docker_group.ansible_facts.getent_group.docker[2]
+      register: user_added_to_docker
+
+    - name: Notify about docker group change
+      debug:
+        msg: "User {{ ansible_user }} added to docker group. You may need to logout and login again for changes to take effect."
+      when: user_added_to_docker.changed
+
+    - name: Ensure .ssh directory exists
+      file:
+        path: "/root/.ssh"
+        state: directory
+        mode: '0700'
+        owner: root
+        group: root
+
+    - name: Copy SSH private key for Git access
+      copy:
+        src: "{{ ssh.local_private_key }}"
+        dest: "/root/.ssh/id_ed25519"
+        mode: '0600'
+        owner: root
+        group: root
+      no_log: true
+
+    - name: Copy SSH public key
+      copy:
+        src: "{{ ssh.local_private_key }}.pub"
+        dest: "/root/.ssh/id_ed25519.pub"
+        mode: '0644'
+        owner: root
+        group: root
+      ignore_errors: yes
+
+    - name: Add GitHub to known hosts
+      known_hosts:
+        name: github.com
+        key: "{{ ssh.github_host_key }}"
+        state: present
+
+    - name: Test SSH connection to GitHub
+      shell: ssh -T git@github.com -o StrictHostKeyChecking=no -o BatchMode=yes 2>&1 || true
+      register: github_ssh_test
+      changed_when: false
+
+    - name: Verify GitHub SSH connection
+      assert:
+        that:
+          - '"successfully authenticated" in github_ssh_test.stdout or "Permission denied" in github_ssh_test.stdout'
+        fail_msg: "GitHub SSH connection failed. Output: {{ github_ssh_test.stdout }}"
+        success_msg: "GitHub SSH connection working"
