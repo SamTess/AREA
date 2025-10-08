@@ -6,7 +6,7 @@
       - dnsutils
       - certbot
       - python3-certbot-nginx
-      - apache2-utils
+      - python3-passlib
     state: present
     update_cache: yes
 
@@ -16,8 +16,8 @@
     name: "{{ prometheus_user | default('admin') }}"
     password: "{{ prometheus_password }}"
     owner: root
-    group: www-data
-    mode: '0640'
+    group: root
+    mode: '0644'
   when: prometheus_password is defined
 
 - name: Stop and disable host nginx service (prevents port 80 conflicts)
@@ -181,6 +181,32 @@
   failed_when: dns_propagation_check.rc != 0
   ignore_errors: yes
 
+- name: Wait for Grafana DNS propagation
+  shell: |
+    max_attempts=20
+    attempt=0
+    server_ip=$(echo "{{ ansible_default_ipv4.address }}" | tr -d '[:space:]')
+
+    while [ $attempt -lt $max_attempts ]; do
+      dns_ip=$(dig +short A grafana.{{ domain_name }} @8.8.8.8 | head -n1 | tr -d '[:space:]')
+
+      echo "Attempt $((attempt + 1))/$max_attempts - Server IP: '$server_ip', DNS IP: '$dns_ip'"
+
+      if [ "$dns_ip" = "$server_ip" ]; then
+        echo "Grafana DNS propagation confirmed"
+        exit 0
+      fi
+
+      sleep 15
+      attempt=$((attempt + 1))
+    done
+
+    echo "Grafana DNS propagation timeout - DNS not propagated yet"
+    exit 1
+  register: grafana_dns_check
+  failed_when: grafana_dns_check.rc != 0
+  ignore_errors: yes
+
 - name: Stop all existing Docker containers before SSL setup
   community.docker.docker_compose_v2:
     project_src: "{{ repository.app_directory }}/deployement/docker"
@@ -320,6 +346,7 @@
 
       📊 Status:
       - DNS Propagation: {{ 'OK' if dns_propagation_check.rc == 0 else 'Failed' }}
+      - Grafana DNS Propagation: {{ 'OK' if grafana_dns_check.rc == 0 else 'Failed' }}
       - SSL Certificate: {{ 'OK' if (certbot_result is not defined or certbot_result.rc == 0) else 'Failed (check logs)' }}
       - HTTPS Services: {{ 'OK' if https_start_result.changed else 'No change' }}
       - HTTPS Health: {{ 'OK' if (https_health_check.status is defined and https_health_check.status == 200) else 'Failed' }}
@@ -329,7 +356,7 @@
     msg: |
       ⚠️  SSL setup had issues. You can:
       1. Check logs: cd {{ repository.app_directory }}/deployement/docker && docker compose logs
-      2. Manual SSL setup: docker run --rm -p 80:80 -v deployement_docker_certbot-etc:/etc/letsencrypt -v deployement_docker_certbot-var:/var/lib/letsencrypt certbot/certbot certonly --standalone --email {{ email_for_ssl }} --agree-tos --no-eff-email --force-renewal -d {{ domain_name }}
-      3. Check DNS: dig {{ domain_name }}
+      2. Manual SSL setup: docker run --rm -p 80:80 -v deployement_docker_certbot-etc:/etc/letsencrypt -v deployement_docker_certbot-var:/var/lib/letsencrypt certbot/certbot certonly --standalone --email {{ email_for_ssl }} --agree-tos --no-eff-email --force-renewal -d {{ domain_name }} -d grafana.{{ domain_name }}
+      3. Check DNS: dig {{ domain_name }} and dig grafana.{{ domain_name }}
       4. Restart services: cd {{ repository.app_directory }}/deployement/docker && docker compose up -d
   when: certbot_result is defined and certbot_result.rc != 0
