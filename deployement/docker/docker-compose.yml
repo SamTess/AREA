@@ -9,6 +9,7 @@ services:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
       - certbot-web:/var/www/certbot
+      - /etc/nginx/.htpasswd_prometheus:/etc/nginx/.htpasswd_prometheus:ro
     depends_on:
       web:
         condition: service_healthy
