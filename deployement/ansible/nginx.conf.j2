@@ -52,6 +52,20 @@ http {
     }
 
     server {
+        listen 80;
+        server_name grafana.{{ DOMAIN }};
+
+        location /.well-known/acme-challenge/ {
+            root /var/www/certbot;
+            try_files $uri =404;
+        }
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+
+    server {
         listen 443 ssl;
         http2 on;
         server_name {{ DOMAIN }};
@@ -116,6 +130,53 @@ http {
 
         location /actuator/ {
             proxy_pass http://backend/actuator/;
+            access_log off;
+        }
+    }
+
+    server {
+        listen 443 ssl;
+        http2 on;
+        server_name grafana.{{ DOMAIN }};
+
+        ssl_certificate /etc/letsencrypt/live/{{ DOMAIN }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ DOMAIN }}/privkey.pem;
+
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header X-Frame-Options DENY always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $server_name;
+
+        location / {
+            proxy_pass http://area-grafana:3000/;
+            proxy_redirect off;
+            proxy_buffering off;
+            proxy_read_timeout 300;
+            proxy_connect_timeout 300;
+            proxy_send_timeout 300;
+        }
+
+        location /prometheus/ {
+            auth_basic "Prometheus Access";
+            auth_basic_user_file /etc/nginx/.htpasswd_prometheus;
+            proxy_pass http://area-prometheus:9090/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /nginx_status {
+            auth_basic "Nginx Status";
+            auth_basic_user_file /etc/nginx/.htpasswd_prometheus;
+            stub_status on;
             access_log off;
         }
     }

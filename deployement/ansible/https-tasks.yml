@@ -6,8 +6,19 @@
       - dnsutils
       - certbot
       - python3-certbot-nginx
+      - apache2-utils
     state: present
     update_cache: yes
+
+- name: Create htpasswd file for Prometheus basic auth
+  htpasswd:
+    path: /etc/nginx/.htpasswd_prometheus
+    name: "{{ prometheus_user | default('admin') }}"
+    password: "{{ prometheus_password }}"
+    owner: root
+    group: www-data
+    mode: '0640'
+  when: prometheus_password is defined
 
 - name: Stop and disable host nginx service (prevents port 80 conflicts)
   systemd:
@@ -195,9 +206,21 @@
     --no-eff-email
     --force-renewal
     -d {{ domain_name }}
+    -d grafana.{{ domain_name }}
   register: certbot_result
   when: not cert_check.stat.exists
   ignore_errors: yes
+
+- name: Copy monitoring configuration files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ repository.app_directory }}/deployement/docker/{{ item.dest }}"
+    mode: '0644'
+  loop:
+    - { src: '../../App/Back/monitoring/prometheus.yml', dest: 'prometheus.yml' }
+    - { src: '../../App/Back/monitoring/grafana/provisioning/', dest: 'grafana/provisioning/' }
+    - { src: '../../App/Back/monitoring/grafana/dashboards/', dest: 'grafana/dashboards/' }
+    - { src: '../../App/Back/Docker/promtail-config.yml', dest: 'promtail-config.yml' }
 
 - name: Start all services with HTTPS
   community.docker.docker_compose_v2:
@@ -259,6 +282,7 @@
         --no-eff-email
         --force-renewal
         -d {{ domain_name }}
+        -d grafana.{{ domain_name }}
       register: retry_certbot_result
       ignore_errors: yes
 

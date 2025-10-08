@@ -39,3 +39,6 @@ production:
 
 backup_directory: "/opt/backups/area"
 log_retention_days: 30
+
+prometheus_user: "admin"
+prometheus_password: "your-secure-password"
