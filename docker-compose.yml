@@ -9,7 +9,7 @@ services:
       file: ./App/Back/Docker/docker-compose.back.yaml
       service: redis
 
-  server:
+  area-backend:
     extends:
       file: ./App/Back/Docker/docker-compose.back.yaml
       service: area-backend
@@ -46,10 +46,40 @@ services:
       - apk_volume:/app/apk:ro
     depends_on:
       - client_mobile
-      - server
+      - area-backend
     networks:
       - area-network
     restart: unless-stopped
+
+  postgres_exporter:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: postgres_exporter
+
+  redis_exporter:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: redis_exporter
+
+  prometheus:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: prometheus
+
+  grafana:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: grafana
+
+  loki:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: loki
+
+  promtail:
+    extends:
+      file: ./App/Back/Docker/docker-compose.back.yaml
+      service: promtail
 
 networks:
   area-network:
@@ -59,4 +89,7 @@ volumes:
   postgres_data:
   redis_data:
   apk_volume:
+  prometheus_data:
+  grafana_data:
+  loki_data:
 

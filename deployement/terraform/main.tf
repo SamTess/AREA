@@ -57,6 +57,24 @@ resource "digitalocean_record" "caa_wildcard_letsencrypt" {
   ttl    = 3600
 }
 
+resource "digitalocean_record" "grafana_staging_a" {
+  count  = contains(var.deploy_environments, "staging") ? 1 : 0
+  domain = digitalocean_domain.AREA.name
+  type   = "A"
+  name   = "grafana.staging"
+  value  = digitalocean_droplet.area_staging[0].ipv4_address
+  ttl    = 60
+}
+
+resource "digitalocean_record" "grafana_prod_a" {
+  count  = contains(var.deploy_environments, "prod") ? 1 : 0
+  domain = digitalocean_domain.AREA.name
+  type   = "A"
+  name   = "grafana"
+  value  = digitalocean_droplet.area_prod[0].ipv4_address
+  ttl    = 60
+}
+
 resource "digitalocean_droplet" "area_staging" {
   count    = contains(var.deploy_environments, "staging") ? 1 : 0
   name     = "area-staging-vm"
