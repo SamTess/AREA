@@ -243,10 +243,10 @@
     dest: "{{ repository.app_directory }}/deployement/docker/{{ item.dest }}"
     mode: '0644'
   loop:
-    - { src: '../../App/Back/monitoring/prometheus.yml', dest: 'prometheus.yml' }
-    - { src: '../../App/Back/monitoring/grafana/provisioning/', dest: 'grafana/provisioning/' }
-    - { src: '../../App/Back/monitoring/grafana/dashboards/', dest: 'grafana/dashboards/' }
-    - { src: '../../App/Back/Docker/promtail-config.yml', dest: 'promtail-config.yml' }
+    - { src: "{{ repository.app_directory }}/App/Back/monitoring/prometheus.yml", dest: 'prometheus.yml' }
+    - { src: "{{ repository.app_directory }}/App/Back/monitoring/grafana/provisioning/", dest: 'grafana/provisioning/' }
+    - { src: "{{ repository.app_directory }}/App/Back/monitoring/grafana/dashboards/", dest: 'grafana/dashboards/' }
+    - { src: "{{ repository.app_directory }}/App/Back/Docker/promtail-config.yml", dest: 'promtail-config.yml' }
 
 - name: Start all services with HTTPS
   community.docker.docker_compose_v2:
