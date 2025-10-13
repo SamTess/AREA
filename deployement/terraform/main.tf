@@ -75,6 +75,39 @@ resource "digitalocean_record" "grafana_prod_a" {
   ttl    = 60
 }
 
+resource "digitalocean_record" "mx_send" {
+  domain   = digitalocean_domain.AREA.name
+  type     = "MX"
+  name     = "send"
+  value    = var.email_mx_server
+  priority = 10
+  ttl      = 3600
+}
+
+resource "digitalocean_record" "spf_send" {
+  domain = digitalocean_domain.AREA.name
+  type   = "TXT"
+  name   = "send"
+  value  = var.email_spf_record
+  ttl    = 3600
+}
+
+resource "digitalocean_record" "dkim_resend" {
+  domain = digitalocean_domain.AREA.name
+  type   = "TXT"
+  name   = "resend._domainkey"
+  value  = var.email_dkim_public_key
+  ttl    = 3600
+}
+
+resource "digitalocean_record" "dmarc" {
+  domain = digitalocean_domain.AREA.name
+  type   = "TXT"
+  name   = "_dmarc"
+  value  = var.email_dmarc_policy
+  ttl    = 3600
+}
+
 resource "digitalocean_droplet" "area_staging" {
   count    = contains(var.deploy_environments, "staging") ? 1 : 0
   name     = "area-staging-vm"
