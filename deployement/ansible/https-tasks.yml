@@ -242,6 +242,7 @@
     src: "{{ item.src }}"
     dest: "{{ repository.app_directory }}/deployement/docker/{{ item.dest }}"
     mode: '0644'
+    remote_src: true
   loop:
     - { src: "{{ repository.app_directory }}/App/Back/monitoring/prometheus.yml", dest: 'prometheus.yml' }
     - { src: "{{ repository.app_directory }}/App/Back/monitoring/grafana/provisioning/", dest: 'grafana/provisioning/' }
