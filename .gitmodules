@@ -1,11 +1,11 @@
 [submodule "App/Back"]
 	path = App/Back
 	url = git@github.com:SamTess/AREA_Back.git
-	branch = fix-liks-save
+	branch = main
 [submodule "App/Web"]
 	path = App/Web
 	url = git@github.com:SamTess/AREA_Web.git
-	branch = fix-links-save
+	branch = main
 [submodule "App/Mobile"]
 	path = App/Mobile
 	url = git@github.com:SamTess/AREA_Mobile.git

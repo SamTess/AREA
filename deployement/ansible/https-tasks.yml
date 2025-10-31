@@ -148,7 +148,7 @@
 
 - name: Wait for web service to be healthy
   pause:
-    seconds: 30
+    seconds: 60
 
 - name: Check if SSL certificate already exists
   stat:
