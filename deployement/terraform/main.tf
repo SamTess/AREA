@@ -112,7 +112,7 @@ resource "digitalocean_droplet" "area_staging" {
   count    = contains(var.deploy_environments, "staging") ? 1 : 0
   name     = "area-staging-vm"
   region   = "fra1"
-  size     = "s-2vcpu-4gb"
+  size     = "s-4vcpu-8gb"
   image    = "ubuntu-22-04-x64"
   ssh_keys = [var.ssh_key_id]
   tags     = ["area", "staging"]
@@ -122,7 +122,7 @@ resource "digitalocean_droplet" "area_prod" {
   count    = contains(var.deploy_environments, "prod") ? 1 : 0
   name     = "area-prod-vm"
   region   = "fra1"
-  size     = "s-2vcpu-4gb"
+  size     = "s-4vcpu-8gb"
   image    = "ubuntu-22-04-x64"
   ssh_keys = [var.ssh_key_id]
   tags     = ["area", "prod"]

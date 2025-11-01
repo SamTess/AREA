@@ -5,7 +5,7 @@
 [submodule "App/Web"]
 	path = App/Web
 	url = git@github.com:SamTess/AREA_Web.git
-	branch = add-tests
+	branch = main
 [submodule "App/Mobile"]
 	path = App/Mobile
 	url = git@github.com:SamTess/AREA_Mobile.git
