@@ -23,7 +23,7 @@ resource "digitalocean_record" "staging_a" {
   count  = contains(var.deploy_environments, "staging") ? 1 : 0
   domain = digitalocean_domain.AREA.name
   type   = "A"
-  name   = "staging"
+  name   = "www"
   value  = digitalocean_droplet.area_staging[0].ipv4_address
   ttl    = 60
 }
@@ -61,7 +61,7 @@ resource "digitalocean_record" "grafana_staging_a" {
   count  = contains(var.deploy_environments, "staging") ? 1 : 0
   domain = digitalocean_domain.AREA.name
   type   = "A"
-  name   = "grafana.staging"
+  name   = "grafana.www"
   value  = digitalocean_droplet.area_staging[0].ipv4_address
   ttl    = 60
 }
