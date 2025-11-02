@@ -23,7 +23,7 @@ resource "digitalocean_record" "staging_a" {
   count  = contains(var.deploy_environments, "staging") ? 1 : 0
   domain = digitalocean_domain.AREA.name
   type   = "A"
-  name   = "staging"
+  name   = "www"
   value  = digitalocean_droplet.area_staging[0].ipv4_address
   ttl    = 60
 }
@@ -61,7 +61,7 @@ resource "digitalocean_record" "grafana_staging_a" {
   count  = contains(var.deploy_environments, "staging") ? 1 : 0
   domain = digitalocean_domain.AREA.name
   type   = "A"
-  name   = "grafana.staging"
+  name   = "grafana.www"
   value  = digitalocean_droplet.area_staging[0].ipv4_address
   ttl    = 60
 }
@@ -75,11 +75,44 @@ resource "digitalocean_record" "grafana_prod_a" {
   ttl    = 60
 }
 
+resource "digitalocean_record" "mx_send" {
+  domain   = digitalocean_domain.AREA.name
+  type     = "MX"
+  name     = "send"
+  value    = var.email_mx_server
+  priority = 10
+  ttl      = 3600
+}
+
+resource "digitalocean_record" "spf_send" {
+  domain = digitalocean_domain.AREA.name
+  type   = "TXT"
+  name   = "send"
+  value  = var.email_spf_record
+  ttl    = 3600
+}
+
+resource "digitalocean_record" "dkim_resend" {
+  domain = digitalocean_domain.AREA.name
+  type   = "TXT"
+  name   = "resend._domainkey"
+  value  = var.email_dkim_public_key
+  ttl    = 3600
+}
+
+resource "digitalocean_record" "dmarc" {
+  domain = digitalocean_domain.AREA.name
+  type   = "TXT"
+  name   = "_dmarc"
+  value  = var.email_dmarc_policy
+  ttl    = 3600
+}
+
 resource "digitalocean_droplet" "area_staging" {
   count    = contains(var.deploy_environments, "staging") ? 1 : 0
   name     = "area-staging-vm"
   region   = "fra1"
-  size     = "s-2vcpu-4gb"
+  size     = "s-4vcpu-8gb"
   image    = "ubuntu-22-04-x64"
   ssh_keys = [var.ssh_key_id]
   tags     = ["area", "staging"]
@@ -89,7 +122,7 @@ resource "digitalocean_droplet" "area_prod" {
   count    = contains(var.deploy_environments, "prod") ? 1 : 0
   name     = "area-prod-vm"
   region   = "fra1"
-  size     = "s-2vcpu-4gb"
+  size     = "s-4vcpu-8gb"
   image    = "ubuntu-22-04-x64"
   ssh_keys = [var.ssh_key_id]
   tags     = ["area", "prod"]
